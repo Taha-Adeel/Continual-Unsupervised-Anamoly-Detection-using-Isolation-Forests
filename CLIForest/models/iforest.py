@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
 import random
-from utils import c
-from itree import IsolationTree
+from models.itree import IsolationTree
+
+import sys
+sys.path.append('..')
+from util.utils import c
 
 class IsolationForest:
     """
@@ -33,7 +36,7 @@ class IsolationForest:
 
         for _ in range(self.n_trees):
             sample_idx = random.sample(range(len(X)), self.sample_size)
-            temp_tree = IsolationTree(self.height_limit, 0).fit_improved(X[sample_idx, :], improved)
+            temp_tree = IsolationTree(self.height_limit, 0).fit(X[sample_idx, :], improved)
             self.trees.append(temp_tree)
 
         return self

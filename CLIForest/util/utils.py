@@ -25,7 +25,6 @@ def find_TPR_threshold(y, scores, desired_TPR):
     return threshold, FPR
 
 
-
 def c(n):
     """
     Average path length of an unsuccessful search in a binary search tree given n nodes.

@@ -1,6 +1,8 @@
 import numpy as np
 import random
-from utils import c
+import sys
+sys.path.append('..')
+from util.utils import c
 
 class IsolationTree:
     """
