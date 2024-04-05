@@ -34,5 +34,5 @@ def c(n):
         return 2 * (np.log(n-1) + 0.5772156649) - (2 * (n-1) / n)
     elif n == 2:
         return 1
-    if n == 1:
+    else:
         return 0

@@ -25,7 +25,7 @@ class IsolationForest:
         self.height_limit = np.log2(sample_size)
         self.trees = []
 
-    def fit(self, X: np.ndarray, improved=False):
+    def fit(self, X: np.ndarray, improved=True):
         """
         Given a 2D matrix of observations, create an ensemble of IsolationTree
         objects and store them in a list: self.trees. 
