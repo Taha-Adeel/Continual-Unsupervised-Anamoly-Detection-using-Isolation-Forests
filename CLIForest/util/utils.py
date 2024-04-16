@@ -6,7 +6,7 @@ from sklearn.metrics import confusion_matrix
 def find_TPR_threshold(y, scores, desired_TPR):
     """
     Start at score threshold 1.0 and work down until we hit desired TPR.
-    Step by 0.01 score increments. For each threshold, compute the TPR
+    Step by 0.001 score increments. For each threshold, compute the TPR
     and FPR to see if we've reached to the desired TPR. If so, return the
     score threshold and FPR.
     """

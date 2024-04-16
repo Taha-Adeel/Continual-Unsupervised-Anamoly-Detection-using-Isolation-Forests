@@ -34,28 +34,29 @@ class IsolationTree:
         if self.size <= 1 or self.current_height >= self.height_limit:
             self.exnodes = 1
             return self
-    
-        self.split_by = random.choice(np.arange(X.shape[1]))
-        X_col = X[:, self.split_by]
-        min_x = X_col.min()
-        max_x = X_col.max()
         
-        if min_x == max_x:
-            self.exnodes = 1
-        else:
-            # Improved split, as suggested by https://github.com/Divya-Bhargavi/isolation-forest/tree/master
-            good_split = False
-            while not good_split:
-                split_value = min_x + random.betavariate(0.5, 0.5) * (max_x - min_x)
-                good_split = not improved
-                l, r = X[X_col < split_value], X[X_col >= split_value]
-                if self.size < 10 or l.shape[0] < 0.25 * r.shape[0] or r.shape[0] < 0.25 * l.shape[0] or (l.shape[0] > 0 and r.shape[0] > 0):
-                    good_split = True
-                    
-            self.split_value = split_value
-            self.left  = IsolationTree(self.height_limit, self.current_height + 1).fit(l, improved)
-            self.right = IsolationTree(self.height_limit, self.current_height + 1).fit(r, improved)
-            self.n_nodes = self.left.n_nodes + self.right.n_nodes + 1
+        # Improved split, as suggested by https://github.com/Divya-Bhargavi/isolation-forest/tree/master
+        good_split = False
+        while not good_split:
+            self.split_by = random.choice(np.arange(X.shape[1]))
+            X_col = X[:, self.split_by]
+            min_x = X_col.min()
+            max_x = X_col.max()
+            split_value = min_x + random.betavariate(0.5, 0.5) * (max_x - min_x)
+            
+            if min_x == max_x:
+                self.exnodes = 1
+                return self
+            
+            good_split = not improved
+            l, r = X[X_col < split_value], X[X_col >= split_value]
+            if self.size < 10 or l.shape[0] < 0.25 * r.shape[0] or r.shape[0] < 0.25 * l.shape[0] or (l.shape[0] > 0 and r.shape[0] > 0):
+                good_split = True
+                
+        self.split_value = split_value
+        self.left  = IsolationTree(self.height_limit, self.current_height + 1).fit(l, improved)
+        self.right = IsolationTree(self.height_limit, self.current_height + 1).fit(r, improved)
+        self.n_nodes = self.left.n_nodes + self.right.n_nodes + 1
 
         return self
     
