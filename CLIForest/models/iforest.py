@@ -24,7 +24,8 @@ class IsolationForest:
         self.contamination = contamination_rate
         self.n_trees = n_trees
         self.height_limit = np.log2(sample_size)
-        self.trees = []
+        self.trees = [None] * n_trees
+
 
     def fit(self, X: np.ndarray, improved=False):
         """
@@ -33,14 +34,13 @@ class IsolationForest:
         """
         if isinstance(X, pd.DataFrame):
             X = X.values
-        self.trees = []
 
-        for _ in range(self.n_trees):
+        for i in range(self.n_trees):
             sample_idx = random.sample(range(len(X)), self.sample_size)
-            temp_tree = IsolationTree(self.height_limit, 0).fit(X[sample_idx, :], improved)
-            self.trees.append(temp_tree)
+            self.trees[i] = IsolationTree(self.height_limit).fit(X[sample_idx, :], improved)
 
         return self
+
 
     def path_length(self, X: np.ndarray) -> np.ndarray:
         """
@@ -54,7 +54,7 @@ class IsolationForest:
 
         pl_vector = []
         for x in (X):
-            pl = np.array([t.path_length(x, 0) for t in self.trees])
+            pl = np.array([t.path_length(x) for t in self.trees])
             pl = pl.mean()
 
             pl_vector.append(pl)
@@ -63,12 +63,14 @@ class IsolationForest:
 
         return pl_vector
 
+
     def anomaly_score(self, X: np.ndarray) -> np.ndarray:
         """
         Given a 2D matrix of observations, X, compute the anomaly score for
         each x_i observation, returning an ndarray of shape (len(X), 1).
         """
         return 2.0 ** (-1.0 * self.path_length(X) / c(len(X)))
+
 
     def predict_from_anomaly_scores(self, scores: np.ndarray, threshold: float) -> np.ndarray:
         """
@@ -78,6 +80,7 @@ class IsolationForest:
         predictions = [1 if p[0] >= threshold else 0 for p in scores]
         
         return predictions
+
 
     def predict(self, X: np.ndarray, threshold: float = None) -> np.ndarray:
         """

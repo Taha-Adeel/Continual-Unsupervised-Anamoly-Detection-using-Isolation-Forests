@@ -17,18 +17,20 @@ class IsolationForestASD(IsolationForest):
         super().__init__(sample_size, contamination_rate, n_trees)
         self.window_size = window_size
         
+        
     def update_forest(self, X: np.ndarray, improved=False):
         """
         Discard the current forest and build a new one using the current window.
         Returns the predictions, scores for the current window.
         """
-        self.trees = []
+        self.trees = [None] * self.n_trees
         self.fit(X, improved)
         scores = self.anomaly_score(X)
         self.threshold = np.percentile(scores, 100 * (1 - self.contamination))
         preds = [1 if s[0] >= self.threshold else 0 for s in scores]
         
         return preds, scores
+        
         
     def stream(self, X: np.ndarray, improved=False):
         """

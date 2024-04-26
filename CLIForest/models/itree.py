@@ -11,7 +11,7 @@ class IsolationTree:
     a split value for the data until the data instances are isolated.
     """
     
-    def __init__(self, height_limit, current_height):
+    def __init__(self, height_limit, current_height=0):
         """ Initialize the tree parameters."""
         self.height_limit = height_limit
         self.current_height = current_height
@@ -29,7 +29,6 @@ class IsolationTree:
         Given a 2D matrix of observations, create an isolation tree. Set field
         self.root to the root of that tree and return it.
         """
-
         self.size = X.shape[0]
         if self.size <= 1 or self.current_height >= self.height_limit:
             self.exnodes = 1
@@ -72,3 +71,11 @@ class IsolationTree:
             return self.left.path_length(x, depth + 1)
         else:
             return self.right.path_length(x, depth + 1)
+    
+        
+    def anamoly_score(self, X: np.ndarray):
+        """
+        Given a 2D matrix of observations, X, compute the anomaly score for
+        each x_i observation, returning an ndarray of shape (len(X), 1).
+        """
+        return 2.0 ** (-1.0 * self.path_length(X) / c(len(X)))
