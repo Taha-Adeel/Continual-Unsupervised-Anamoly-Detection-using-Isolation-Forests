@@ -16,16 +16,17 @@ class IsolationForest:
     some threshold, the observation is an anomaly.
     """
     
-    def __init__(self, sample_size, n_trees=10):
+    def __init__(self, sample_size, contamination_rate=0.1, n_trees=30):
         """
         Set the sub sampling size and the number of trees in the forest.
         """
         self.sample_size = sample_size
+        self.contamination = contamination_rate
         self.n_trees = n_trees
         self.height_limit = np.log2(sample_size)
         self.trees = []
 
-    def fit(self, X: np.ndarray, improved=True):
+    def fit(self, X: np.ndarray, improved=False):
         """
         Given a 2D matrix of observations, create an ensemble of IsolationTree
         objects and store them in a list: self.trees. 
@@ -78,11 +79,13 @@ class IsolationForest:
         
         return predictions
 
-    def predict(self, X: np.ndarray, threshold: float) -> np.ndarray:
+    def predict(self, X: np.ndarray, threshold: float = None) -> np.ndarray:
         """
         A shorthand for calling anomaly_score() and predict_from_anomaly_scores().
         """
-        scores = 2.0 ** (-1.0 * self.path_length(X) / c(len(X)))
+        scores = self.anomaly_score(X)
+        if threshold is None:
+            threshold = np.percentile(scores, 100 * (1 - self.contamination))
         predictions = [1 if p[0] >= threshold else 0 for p in scores]
 
         return predictions
